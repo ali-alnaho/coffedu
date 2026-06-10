@@ -42,8 +42,10 @@ export default function useStudentForm() {
     if (!studentData.success) {
       const studentErorrs = flattenError(studentData.error);
       setErrors(studentErorrs.fieldErrors);
+      console.log(studentErorrs.fieldErrors);
       return;
     }
+    setErrors({});
   };
 
   return {

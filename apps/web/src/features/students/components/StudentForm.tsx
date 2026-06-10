@@ -85,6 +85,8 @@ export default function StudentForm() {
 
   return (
     <div>
+      <p>create new student</p>
+
       <form onSubmit={handleSubmit}>
         {studentFields.map((field) => (
           <Input
@@ -165,10 +167,12 @@ export default function StudentForm() {
           onChange={handleChange}
           placeholder="Enter The Student Date Of Birth"
         /> */}
-        {/* <button type="submit" disabled={Object.keys(errors).length > 0}>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          type="submit"
+        >
           submit
-        </button> */}
-        <button type="submit">submit</button>
+        </button>
       </form>
     </div>
   );

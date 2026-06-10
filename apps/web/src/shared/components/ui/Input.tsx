@@ -1,3 +1,6 @@
+import { inputStyles } from './input.styles';
+import clsx from 'clsx';
+
 interface InputProps {
   label: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'date';
@@ -22,8 +25,8 @@ export default function Input({
   placeholder = '',
 }: InputProps) {
   return (
-    <div>
-      <label>{label} : </label>
+    <div className={inputStyles.container}>
+      <label className={inputStyles.label}>{label} : </label>
       <input
         type={type}
         name={name}
@@ -32,8 +35,13 @@ export default function Input({
         required={required}
         disabled={disabled}
         placeholder={placeholder}
+        className={inputStyles.input}
       />
-      {error && <p>{error}</p>}
+      {error?.map((message) => (
+        <p key={message} className={inputStyles.error}>
+          {message}
+        </p>
+      ))}
     </div>
   );
 }
