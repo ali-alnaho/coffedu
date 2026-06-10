@@ -1,3 +1,3 @@
 export * from './student/index.js';
 
-export { ZodError } from 'zod';
+export { ZodError, flattenError } from 'zod';

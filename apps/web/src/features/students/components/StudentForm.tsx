@@ -5,9 +5,21 @@ import { StudentDto } from '@coffedu/contracts';
 type StudentField = {
   label: string;
 
-  // Omit ==> it's meaing => Bring all type of StudentDto except "id"
-  // keyof ==> it's meaing => make the field -- name -- type === index of StudentDto
+  // Omit<StudentDto, 'id'>
+  // Creates a new type from StudentDto without the "id" property.
+  //
+  // keyof
+  // Gets all property names (keys) of that type.
+  // name: 'firstName' | 'lastName' | 'dateOfBirth' ........ ;
+  //
+  // Extract<..., string>
+  // Keeps only string keys.
+  //
+  // Result:
+  // name can only be one of the StudentDto property names,
+  // except "id".
   name: Extract<keyof Omit<StudentDto, 'id'>, string>;
+
   type?: 'text' | 'date';
   required?: boolean;
   placeholder?: string;
@@ -60,7 +72,7 @@ const studentFields: StudentField[] = [
 ];
 
 export default function StudentForm() {
-  const { studentForm, handleChange, handleSubmit } = useStudentForm();
+  const { studentForm, handleChange, handleSubmit, errors } = useStudentForm();
 
   const getInputValue = (field: StudentField): string => {
     const value = studentForm[field.name];
@@ -84,8 +96,10 @@ export default function StudentForm() {
             onChange={handleChange}
             required={field.required}
             placeholder={field.placeholder}
+            error={errors[field.name]}
           />
         ))}
+
         {/* 
         <Input
           label="First Name"
