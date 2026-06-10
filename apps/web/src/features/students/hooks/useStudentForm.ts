@@ -7,6 +7,7 @@ import {
   ZodError,
   flattenError,
 } from '@coffedu/contracts';
+import { useCreateStudent } from './useCreateStudent';
 
 const INITIAL_FORM: StudentDto = {
   firstName: '',
@@ -25,6 +26,7 @@ type StudentFormErrors = Partial<Record<keyof StudentDto, string[]>>;
 export default function useStudentForm() {
   const [studentForm, setStudentForm] = useState<StudentDto>(INITIAL_FORM);
   const [errors, setErrors] = useState<StudentFormErrors>({});
+  const { create } = useCreateStudent();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -34,7 +36,7 @@ export default function useStudentForm() {
     });
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const studentData = StudentSchema.safeParse(studentForm);
@@ -45,6 +47,7 @@ export default function useStudentForm() {
       console.log(studentErorrs.fieldErrors);
       return;
     }
+    await create(studentData.data);
     setErrors({});
   };
 

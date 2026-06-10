@@ -15,7 +15,7 @@ export const StudentSchema = z.object({
     .string()
     .trim()
     .min(2, { message: 'Grand name must be at least 2 characters' })
-    .max(15, { message: 'Grand name must be at most 15 characters' }),
+    .max(15, { message: 'Grand name must be at most15 characters' }),
   theFourthName: z
     .string()
     .trim()
