@@ -1,4 +1,4 @@
-import { createStudent } from '../services/student.api';
+import { createStudent } from '../services/studentApi';
 import { useState } from 'react';
 import { StudentDto } from '@coffedu/contracts';
 
@@ -12,6 +12,7 @@ export function useCreateStudent() {
 
     try {
       const result = await createStudent(data);
+      console.log(result);
       return result;
     } catch (err) {
       // setError(err.message);
