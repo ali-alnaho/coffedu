@@ -4,15 +4,8 @@ import { StudentDto } from '@coffedu/contracts';
 import { useGetStudents } from '../hooks/useGetStudents';
 
 export default function GetAllStudent() {
-  const [students, setStudents] = useState<StudentDto[]>([]);
-  const { getAll } = useGetStudents();
-  useEffect(() => {
-    fetch(`http://localhost:5050/api/students`)
-      .then((res) => res.json())
-      .then((data) => {
-        setStudents(data);
-      });
-  }, []);
+  const { students } = useGetStudents();
+
   return (
     <div>
       <ul>

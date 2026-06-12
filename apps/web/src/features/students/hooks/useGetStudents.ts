@@ -1,17 +1,24 @@
-// import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getStudents } from '../services/studentApi';
+import { StudentDto } from '@coffedu/contracts';
 
 export function useGetStudents() {
-  async function getAll() {
-    try {
-      const result = await getStudents();
-      return result;
-    } catch (error) {
-      console.error('Fetch failed:', error);
-    }
-  }
+  const [students, setStudents] = useState<StudentDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  return {
-    getAll,
-  };
+  useEffect(() => {
+    const getAll = async () => {
+      try {
+        const data = await getStudents();
+        setStudents(data);
+      } catch (error) {
+        console.error('Fetch failed:', error);
+      }
+    };
+
+    getAll();
+  }, []);
+
+  return { students };
 }
