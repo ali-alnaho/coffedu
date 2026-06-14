@@ -1,15 +1,9 @@
-import { StudentDto } from '@coffedu/contracts';
-
-interface CreateStudentResponse {
-  success: boolean;
-  message: string;
-  data: StudentDto;
-}
+import { StudentDto, StudentResponse } from '@coffedu/contracts';
 
 // Sends a POST request to create a new student and returns the API response.
 export const createStudent = async (
   data: StudentDto
-): Promise<CreateStudentResponse> => {
+): Promise<StudentResponse> => {
   //Send the network request
   const response = await fetch('http://localhost:5050/api/students', {
     method: 'POST',
@@ -23,7 +17,7 @@ export const createStudent = async (
     throw new Error(error.message);
   }
 
-  return response.json() as Promise<CreateStudentResponse>;
+  return response.json() as Promise<StudentResponse>;
 };
 
 // Sends a GET request to get All students from server

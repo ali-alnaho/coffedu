@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../../db.js';
 import { StudentSchema, ZodError, StudentDto } from '@coffedu/contracts';
+import { getFullName } from './student.utils.js';
 
 export const getAllStudents = async (req: Request, res: Response) => {
   try {
@@ -69,6 +70,7 @@ export const createNewStudent = async (
       success: true,
       message: 'Data received successfully!',
       data: newStudent,
+      fullName: getFullName(newStudent),
     });
   } catch (error) {
     // get error from zod
@@ -124,6 +126,7 @@ export const updateStudentByID = async (req: Request, res: Response) => {
       success: true,
       message: 'Data update successfully!',
       data: updateStudent,
+      fullName: getFullName(updateStudent),
     });
   } catch (error) {
     // get error from zod
