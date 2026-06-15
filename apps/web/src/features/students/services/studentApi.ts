@@ -20,7 +20,7 @@ export const createStudent = async (
   return response.json() as Promise<StudentResponse>;
 };
 
-// Sends a GET request to get All students from server
+// Send a GET request to get All students from server
 export const getStudents = async (): Promise<StudentDto[]> => {
   const response = await fetch('http://localhost:5050/api/students');
 
@@ -29,5 +29,19 @@ export const getStudents = async (): Promise<StudentDto[]> => {
   }
 
   const data = await response.json();
+  return data;
+};
+
+// send a GET request  to get student by ID
+export const getStudentByID = async (
+  studentID: number
+): Promise<StudentDto> => {
+  const response = await fetch(
+    `http://localhost:5050/api/students/${studentID}`
+  );
+  if (!response.ok) {
+    console.log(response.status);
+  }
+  const data: StudentDto = await response.json();
   return data;
 };
