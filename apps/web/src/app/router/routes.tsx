@@ -1,15 +1,5 @@
-import StudentCreate from '../../features/students/pages/StudentCreate';
-import GetAllStudent from '../../features/students/pages/GetAllStudent';
+import { studentRoutes } from '../../features/students/routes/studentRoutes';
 import { createBrowserRouter } from 'react-router';
-const routes = [
-  {
-    path: '/',
-    element: <StudentCreate />,
-  },
-  {
-    path: '/students',
-    element: <GetAllStudent />,
-  },
-];
 
+const routes = [...studentRoutes];
 export const router = createBrowserRouter(routes);
