@@ -12,11 +12,30 @@ datasource db {
   provider = "postgresql"
 }
 
-// student table
+// User table 
+model User {
+  // [Name]  [Type]  [Attributes]
+  // Primary key
+  id String @id @default(cuid())
 
+  // Data fields 
+  firstName String
+  familyName String?
+  email String @unique
+  userName String @unique
+  password String
+
+  //Dates 
+  createdAt DateTime @default(now()) 
+  
+  // Relations 
+
+}
+
+
+// student table
 model student {
   // Primary key
-
   id Int @id @default(autoincrement())
 
   // Data fields

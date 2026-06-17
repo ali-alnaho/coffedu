@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { config } from './config/env.config.js';
 import studentRouter from './modules/students/student.routes.js';
+import authRouter from './modules/auth/auth.routes.js';
 
 const app = express();
 
@@ -9,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api', studentRouter);
+app.use('/api', authRouter);
 
 app.listen(config.port, () => {
   console.log(`Coffedu API is listening on port ${config.port}`);

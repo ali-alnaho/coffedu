@@ -10,4 +10,5 @@ export interface StudentResponse {
   success: boolean;
   message: string;
   data: StudentDto;
+  fullName: string;
 }

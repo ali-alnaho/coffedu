@@ -20,6 +20,26 @@ export const createStudent = async (
   return response.json() as Promise<StudentResponse>;
 };
 
+// Sends a PUT request to UPDATE a student by studentID and returns the API response.
+export const updateStudentByID = async (
+  data: StudentDto,
+  studentID: Number
+): Promise<StudentResponse> => {
+  const response = await fetch(
+    `http://localhost:5050/api/students/${studentID}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }
+  );
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message);
+  }
+  return response.json() as Promise<StudentResponse>;
+};
+
 // Send a GET request to get All students from server
 export const getStudents = async (): Promise<StudentDto[]> => {
   const response = await fetch('http://localhost:5050/api/students');
