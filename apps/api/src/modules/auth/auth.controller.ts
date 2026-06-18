@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { registerSchema, ZodError, loginSchema } from '@coffedu/contracts';
 import prisma from '../../db.js';
 import bcrypt from 'bcrypt';
+import Jwt from 'jsonwebtoken';
 
 export async function register(req: Request, res: Response) {
   try {
@@ -47,6 +48,7 @@ export async function login(req: Request, res: Response) {
   try {
     const { email, password } = loginSchema.parse(req.body);
 
+    // find user by email in user module
     const user = await prisma.user.findUnique({
       where: {
         email,
@@ -54,12 +56,26 @@ export async function login(req: Request, res: Response) {
     });
     if (!user) throw new Error('User not found');
 
-    const isValid = bcrypt.compare(password, user.password);
+    // check if user password = mudel password in database
+    const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) throw new Error('Invalid password');
+
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET is missing');
+    }
+    const token = Jwt.sign(
+      {
+        userId: user.id,
+        userEmail: user.email,
+      },
+      jwtSecret,
+      { expiresIn: '1d' }
+    );
 
     res.json({
       success: true,
-      data: user,
+      data: { user, token },
     });
   } catch (error) {
     if (error instanceof ZodError) {
