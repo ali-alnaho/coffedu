@@ -6,6 +6,7 @@ import { getFullName } from './student.utils.js';
 export const getAllStudents = async (req: Request, res: Response) => {
   try {
     const students = await prisma.student.findMany();
+    console.log(req.user);
     res.json(students);
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong' });

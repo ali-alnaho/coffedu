@@ -70,6 +70,8 @@ export async function login(req: Request, res: Response) {
         userEmail: user.email,
       },
       jwtSecret,
+
+      // ?????
       { expiresIn: '1d' }
     );
 
@@ -90,7 +92,7 @@ export async function login(req: Request, res: Response) {
     }
     res.status(401).json({
       success: false,
-      message: error.message,
+      message: 'error.message',
     });
   }
 }

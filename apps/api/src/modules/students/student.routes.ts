@@ -6,10 +6,11 @@ import {
   updateStudentByID,
   deleteStudentById,
 } from './student.controller.js';
+import { authMiddleware } from '../auth/auth.middleware.js';
 
 const studentRouter = Router();
 
-studentRouter.get('/students', getAllStudents);
+studentRouter.get('/students', authMiddleware, getAllStudents);
 studentRouter.get('/students/:id', getStudentById);
 
 studentRouter.post('/students', createNewStudent);
