@@ -19,15 +19,15 @@ model User {
   id String @id @default(cuid())
 
   // Data fields 
-  firstName String
+  firstName  String
   familyName String?
-  email String @unique
-  userName String @unique
-  password String
+  email      String  @unique
+  userName   String  @unique
+  password   String
 
   //Dates 
-  createdAt DateTime @default(now()) 
-  
+  createdAt DateTime @default(now())
+
   // Relations 
   role Role @default(USER)
 }
@@ -35,16 +35,15 @@ model User {
 enum Role {
   USER
   STUDENT
-  MANEGAR
+  MANAGER
   TEACHER
   ADMIN
 }
 
-
 // student table
-model student {
+model Student {
   // Primary key
-  id Int @id @default(autoincrement())
+  id String @id @default(cuid())
 
   // Data fields
   firstName        String
@@ -61,4 +60,108 @@ model student {
   updatedAt DateTime @updatedAt
 
   // Relations
+  studentEnrollments StudentEnrollments[]
 }
+
+// acadimic_years model 
+model AcademicYears {
+  // Primary key
+  id        String   @id @default(cuid())
+  year      String   @unique // e.g. "2024-2025" 
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(false)
+
+  // Date 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  studentEnrollments StudentEnrollments[]
+}
+
+model GradeLevels {
+  // Primary Key
+  id    String @id @default(cuid())
+  level Int    @unique // e.g. level = 1
+  name  String // e.g. name = "First Grade"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  studentEnrollments StudentEnrollments[]
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  REPEATED
+  GRADUATED
+  WITHDRAWN
+}
+
+model StudentEnrollments {
+  id         String @id @default(cuid())
+  // relation field 
+  studentId  String
+  gradeId    String
+  academicId String
+
+  status EnrollmentStatus @default(ACTIVE)
+
+  // relations 
+  student      Student       @relation(fields: [studentId], references: [id])
+  gradeLevel   GradeLevels   @relation(fields: [gradeId], references: [id])
+  academicYear AcademicYears @relation(fields: [academicId], references: [id])
+
+  @@unique([studentId, academicId])
+}
+
+//             ┌──────────────┐
+//             │     User     │
+//             ├──────────────┤
+//             │ id (PK)      │
+//             │ firstName    │
+//             │ familyName   │
+//             │ email        │
+//             │ userName     │
+//             │ password     │
+//             │ role         │
+//             │ createdAt    │
+//             └──────────────┘
+//                     │
+//                     │ (future relation possible)
+//                     │
+//                     ▼
+//             ┌──────────────┐
+//             │   Student    │
+//             ├──────────────┤
+//             │ id (PK)      │
+//             │ firstName    │
+//             │ fatherName   │
+//             │ ...          │
+//             └──────────────┘
+//                     │
+//                     │ 1 → many
+//                     ▼
+//     ┌────────────────────────────────┐
+//     │     StudentEnrollments         │
+//     ├────────────────────────────────┤
+//     │ id (PK)                        │
+//     │ studentId (FK) ─────────────── ┼────────────────┐
+//     │ gradeId (FK)                   │                │
+//     │ academicId (FK)                │                │
+//     │ status                         │                │
+//     └────────────────────────────────┘                │
+//              │                    │                   │
+//              │                    │                   │
+//              ▼                    ▼                   ▼
+//  ┌──────────────────┐  ┌──────────────────┐  ┌────────────────────┐
+//  │  GradeLevels     │  │ AcademicYears    │  │     Student        │
+//  ├──────────────────┤  ├──────────────────┤  ├────────────────────┤
+//  │ id (PK)          │  │ id (PK)          │  │ id (PK)            │
+//  │ level            │  │ year             │  │ ...                │
+//  │ name             │  │ startDate        │  │                    │
+//  └──────────────────┘  │ endDate          │  └────────────────────┘
+//                        │ isActive         │
+//                        └──────────────────┘
