@@ -31,7 +31,11 @@ export const authMiddleware = (
 
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET is missing');
+      console.error(
+        'CRITICAL ERROR: JWT_SECRET is missing from environment variables.'
+      );
+      res.status(500).json({ message: 'Internal server configuration error.' });
+      return;
     }
 
     // make decoded for token
@@ -44,6 +48,10 @@ export const authMiddleware = (
     req.user = metaData;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'no token' });
+    if (error instanceof jwt.TokenExpiredError) {
+      res.status(401).json({ message: 'Token expired' });
+      return;
+    }
+    res.status(401).json({ message: 'Invalid or missing token' });
   }
 };

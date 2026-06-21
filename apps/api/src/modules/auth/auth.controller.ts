@@ -3,6 +3,7 @@ import { registerSchema, ZodError, loginSchema } from '@coffedu/contracts';
 import prisma from '../../db.js';
 import bcrypt from 'bcrypt';
 import Jwt from 'jsonwebtoken';
+import { Role } from '../../generated/prisma/enums.js';
 
 export async function register(req: Request, res: Response) {
   try {
@@ -18,6 +19,9 @@ export async function register(req: Request, res: Response) {
         email,
         userName,
         password: hashedPassword,
+
+        // Enforce USER role by default so users cannot self-assign ADMIN privileges
+        role: Role.USER,
       },
     });
 
@@ -68,6 +72,7 @@ export async function login(req: Request, res: Response) {
       {
         userId: user.id,
         userEmail: user.email,
+        role: user.role,
       },
       jwtSecret,
 

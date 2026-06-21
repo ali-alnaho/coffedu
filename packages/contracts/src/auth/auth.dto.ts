@@ -5,8 +5,8 @@ export type RegisterDto = z.infer<typeof registerSchema>;
 
 export interface AuthUser {
   userId: String;
-  userEmail: String;
+  userEmail?: String;
 
   // or use arry of string rolse role: String[];
-  role?: 'ADMIN' | 'TEACHER' | 'STUDENT';
+  role: 'ADMIN' | 'TEACHER' | 'STUDENT' | 'USER' | 'MANEGAR';
 }

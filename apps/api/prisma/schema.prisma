@@ -29,7 +29,15 @@ model User {
   createdAt DateTime @default(now()) 
   
   // Relations 
+  role Role @default(USER)
+}
 
+enum Role {
+  USER
+  STUDENT
+  MANEGAR
+  TEACHER
+  ADMIN
 }
 
 
