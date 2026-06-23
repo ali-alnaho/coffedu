@@ -2,6 +2,11 @@ import { Request, Response } from 'express';
 import prisma from '../../db.js';
 import { StudentSchema, ZodError, StudentDto } from '@coffedu/contracts';
 import { getFullName } from './student.utils.js';
+import { EnrollmentStatus } from '../../generated/prisma/enums.js';
+import util from 'util';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import { Role } from '../../generated/prisma/enums.js';
 
 export const getAllStudents = async (req: Request, res: Response) => {
   try {
@@ -15,10 +20,10 @@ export const getAllStudents = async (req: Request, res: Response) => {
 
 export const getStudentById = async (req: Request, res: Response) => {
   try {
-    const studentId = req.params.id;
+    const studentId = req.params.id as string;
     const student = await prisma.student.findUnique({
       where: {
-        id: Number(studentId),
+        id: studentId,
       },
     });
 
@@ -44,34 +49,66 @@ export const createNewStudent = async (
       dateOfBirth,
     } = StudentSchema.parse(req.body);
 
-    const newStudent = await prisma.student.create({
-      data: {
-        firstName,
-        fatherName,
-        grandName,
+    const password = crypto.randomBytes(8).toString('hex');
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const generatedUserName = `${firstName.toLocaleLowerCase().trim()}_${crypto.randomInt(100000, 999999)}`;
 
-        // sent the field just if user sent data in this field
-        // if user dos not sent any data this filde will by disappeared
-        ...(theFourthName && { theFourthName }),
-        ...(familyName && { familyName }),
+    const studentWithUser = await prisma.$transaction(async (tx) => {
+      const newStudent = await tx.student.create({
+        data: {
+          firstName,
+          fatherName,
+          grandName,
 
-        motherFirstName,
-        motherFatherName,
-        dateOfBirth,
-      },
-      select: {
-        id: true,
-        firstName: true,
-        fatherName: true,
-      },
+          // sent the field just if user sent data in this field
+          // if user dos not sent any data this filde will by disappeared
+          ...(theFourthName && { theFourthName }),
+          ...(familyName && { familyName }),
+
+          motherFirstName,
+          motherFatherName,
+          dateOfBirth,
+
+          studentEnrollments: {
+            create: [
+              {
+                status: EnrollmentStatus.ACTIVE,
+                gradeId: 'cmqo6ckhr0003ehlv9lim7mg2',
+                academicId: 'cmqo6ckhl0002ehlvxiz0w8hb',
+              },
+            ],
+          },
+        },
+        select: {
+          id: true,
+          firstName: true,
+          fatherName: true,
+        },
+      });
+
+      const newUser = await tx.user.create({
+        data: {
+          userName: generatedUserName,
+          password: hashedPassword,
+          role: Role.STUDENT,
+          studentId: newStudent.id,
+        },
+        select: {
+          userName: true,
+          role: true,
+        },
+      });
+
+      return { newStudent, newUser, password };
     });
 
     //Return a respons to the clinent
     res.status(201).json({
       success: true,
-      message: 'Data received successfully!',
-      data: newStudent,
-      fullName: getFullName(newStudent),
+      message: 'Create Student with User successfully!',
+      studentId: studentWithUser.newStudent.id,
+      data: studentWithUser,
+      fullName: getFullName(studentWithUser.newStudent),
     });
   } catch (error) {
     // get error from zod
@@ -89,19 +126,19 @@ export const createNewStudent = async (
     console.log(error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create student',
+      message: 'Failed to create student and user ',
     });
   }
 };
 
 export const updateStudentByID = async (req: Request, res: Response) => {
   try {
-    const studentId = req.params.id;
+    const studentId = req.params.id as string;
     const studentData: StudentDto = StudentSchema.parse(req.body);
 
     const updateStudent = await prisma.student.update({
       where: {
-        id: Number(studentId),
+        id: studentId,
       },
       data: {
         firstName: studentData.firstName,
@@ -151,10 +188,10 @@ export const updateStudentByID = async (req: Request, res: Response) => {
 
 export const deleteStudentById = async (req: Request, res: Response) => {
   try {
-    const studentId = req.params.id;
+    const studentId = req.params.id as string;
     const deleteStudent = await prisma.student.delete({
       where: {
-        id: Number(studentId),
+        id: studentId,
       },
     });
     res.status(200).json({

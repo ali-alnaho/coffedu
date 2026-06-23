@@ -50,12 +50,12 @@ export async function register(req: Request, res: Response) {
 
 export async function login(req: Request, res: Response) {
   try {
-    const { email, password } = loginSchema.parse(req.body);
+    const { userName, password } = loginSchema.parse(req.body);
 
     // find user by email in user module
     const user = await prisma.user.findUnique({
       where: {
-        email,
+        userName,
       },
     });
     if (!user) throw new Error('User not found');
@@ -71,7 +71,6 @@ export async function login(req: Request, res: Response) {
     const token = Jwt.sign(
       {
         userId: user.id,
-        userEmail: user.email,
         role: user.role,
       },
       jwtSecret,

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { StudentSchema } from './student.schema.js';
 
 export type StudentDto = z.infer<typeof StudentSchema> & {
-  id?: number;
+  id?: string;
   [key: string]: any;
 };
 
