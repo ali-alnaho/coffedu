@@ -1,11 +1,10 @@
 import { inputStyles } from './input.styles';
-import clsx from 'clsx';
 
 interface InputProps {
   label: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'date';
   name: string;
-  value: string;
+  value?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   error?: string[];
