@@ -1,4 +1,4 @@
-const student = [
+export const student = [
   {
     id: '1',
     name: 'Jamil',

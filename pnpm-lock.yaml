@@ -298,6 +298,12 @@ importers:
       react-router-dom:
         specifier: ^7.17.0
         version: 7.17.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      uuid:
+        specifier: ^14.0.1
+        version: 14.0.1
+      zustand:
+        specifier: ^5.0.14
+        version: 5.0.14(@types/react@19.2.15)(react@19.2.6)
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -2272,6 +2278,10 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
+  uuid@14.0.1:
+    resolution: {integrity: sha512-6ZxzVpzDXDa3bJWaHilVayA+BH/1zmxCJoVgvmqJnid/gPoKHxUrS/aC/T6LGQtNHT+XHG9fXPJB4d+IrU30Ew==}
+    hasBin: true
+
   valibot@1.2.0:
     resolution: {integrity: sha512-mm1rxUsmOxzrwnX5arGS+U4T25RdvpPjPN4yR0u9pUBov9+zGVtO84tif1eY4r6zWxVxu3KzIyknJy3rxfRZZg==}
     peerDependencies:
@@ -2361,6 +2371,24 @@ packages:
 
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
+  zustand@5.0.14:
+    resolution: {integrity: sha512-/8tAspM5LMPr28b3fwLYrtdj77ECpfZviaP75CMTnwO8ISyaE4GDIG/9rDDYq/cH9D2Xw2A2RXglLInmVBQB/g==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
 snapshots:
 
@@ -4213,6 +4241,8 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
+  uuid@14.0.1: {}
+
   valibot@1.2.0(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
@@ -4257,3 +4287,8 @@ snapshots:
       zod: 4.4.3
 
   zod@4.4.3: {}
+
+  zustand@5.0.14(@types/react@19.2.15)(react@19.2.6):
+    optionalDependencies:
+      '@types/react': 19.2.15
+      react: 19.2.6

@@ -1,51 +1,9 @@
-import { useState } from 'react';
-import AddHall from '../components/AddHall';
-
-interface AllHall {
-  id: number;
-  hallComponents: React.ReactNode;
-}
-
-interface HallForm {
-  hallName: string;
-  column: number;
-  row: number;
-}
+import HallForm from '../components/HallForm';
 
 export default function Home() {
-  const [halls, setHall] = useState<AllHall[]>([]);
-  const [hallForm, setHallForm] = useState<HallForm>({
-    hallName: '',
-    column: 0,
-    row: 0,
-  });
-
-  function addNewHall() {
-    console.log(hallForm);
-    setHall((prev) => {
-      const update = [
-        ...prev,
-        {
-          id: 1,
-          hallComponents: <AddHall onHallChange={setHallForm} />,
-        },
-      ];
-      return update;
-    });
-  }
   return (
     <div>
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={addNewHall}
-      >
-        add hall
-      </button>
-      <div>
-        {halls.map((hall) => (
-          <div key={hall.id}>{hall.hallComponents}</div>
-        ))}
-      </div>
+      <HallForm />
     </div>
   );
 }

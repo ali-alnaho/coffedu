@@ -1,15 +1,17 @@
 import { inputStyles } from './input.styles';
+import { type Ref } from 'react';
 
 interface InputProps {
   label: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'date';
   name: string;
-  value?: string;
+  value?: string | number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   error?: string[];
   disabled?: boolean;
   placeholder?: string;
+  ref?: Ref<HTMLInputElement>;
 }
 
 export default function Input({
@@ -22,6 +24,7 @@ export default function Input({
   error,
   disabled = false,
   placeholder = '',
+  ref,
 }: InputProps) {
   return (
     <div className={inputStyles.container}>
@@ -35,6 +38,7 @@ export default function Input({
         disabled={disabled}
         placeholder={placeholder}
         className={inputStyles.input}
+        ref={ref}
       />
       {error?.map((message) => (
         <p key={message} className={inputStyles.error}>
