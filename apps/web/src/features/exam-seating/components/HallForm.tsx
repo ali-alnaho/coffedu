@@ -1,6 +1,6 @@
 import Input from '../../../shared/components/ui/Input';
 import { student } from '../services/api/StudentData';
-import { useHallForm } from '../hooks/useHallForm';
+import useHallForm from '../hooks/useHallForm';
 
 export default function HallForm() {
   const {

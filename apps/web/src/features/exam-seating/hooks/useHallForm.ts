@@ -12,7 +12,7 @@ import { useHallsStore } from '../store/useHallsStore';
 
 const INITIAL_DATA = { hallName: '', column: '', row: '' };
 
-export function useHallForm() {
+function useHallForm() {
   const [hallForm, setHallForm] = useState<HallFormDto>(INITIAL_DATA);
   const [errors, setErrors] = useState<HallFormError>({});
   const hallNameRef = useRef<HTMLInputElement | null>(null);
@@ -140,3 +140,5 @@ export function useHallForm() {
     isCapacityEnough,
   };
 }
+
+export default useHallForm;
