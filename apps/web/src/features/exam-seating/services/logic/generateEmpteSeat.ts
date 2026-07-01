@@ -28,7 +28,7 @@ function generateEmpteSeat(hallaList: Halls[]): HallSeating[] {
       seats: hallMap,
     });
   }
-  console.log(JSON.stringify(emptySeating, null, 2));
+  //console.log(JSON.stringify(emptySeating, null, 2));
   return emptySeating;
 }
 

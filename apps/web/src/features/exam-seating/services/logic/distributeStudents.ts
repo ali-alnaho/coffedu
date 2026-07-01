@@ -27,13 +27,14 @@ function distributeStudents(
             name: studentsList[studentIndex].name,
           };
           seat.status = 'occupied';
+
           studentIndex++;
         }
       }
     }
   }
 
-  //console.log(JSON.stringify(hallsSeating, null, 2));
+  console.log(JSON.stringify(hallsSeating, null, 2));
   return hallsSeating;
 }
 

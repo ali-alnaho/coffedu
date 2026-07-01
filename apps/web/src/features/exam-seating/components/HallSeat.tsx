@@ -1,7 +1,7 @@
 import useHallSeat from '../hooks/useHallSeat';
 
 export default function HallSeat() {
-  const { generate, emptySeating } = useHallSeat();
+  const { generate, handleToggleSeat, emptySeating } = useHallSeat();
   return (
     <div>
       <p>generate seats</p>
@@ -26,17 +26,31 @@ export default function HallSeat() {
             <div className="flex flex-col gap-3 items-center">
               {hall.seats.map((row, rowIndex) => (
                 <div key={`row-${rowIndex}`} className="flex gap-3 ">
-                  {row.map((seat) => (
+                  {row.map((seat, colIndex) => (
                     <button
+                      onClick={() =>
+                        handleToggleSeat(hall.hallId, rowIndex, colIndex)
+                      }
                       key={seat.id}
-                      className="group relative w-12 h-12 flex items-center justify-center rounded bg-green-100 hover:bg-red-500 border border-green-300 transition-all duration-200 ease-in-out cursor-pointer overflow-hidden shadow-sm"
+                      className={`group relative w-12 h-12 flex items-center justify-center rounded border transition-all duration-200
+                            ${
+                              seat.status === 'blocked'
+                                ? 'bg-red-500 border-red-700 text-white'
+                                : 'bg-green-100 border-green-300 hover:bg-red-100'
+                            }`}
                     >
-                      <span className="text-sm font-medium text-green-800 group-hover:opacity-0 transition-opacity">
-                        ({seat.row}-{seat.column})
-                      </span>
-                      <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                        X
-                      </span>
+                      {seat.status === 'blocked' ? (
+                        <span className="font-bold text-lg">X</span>
+                      ) : (
+                        <>
+                          <span className="text-sm font-medium text-green-800 group-hover:opacity-0 transition-opacity">
+                            ({seat.row}-{seat.column})
+                          </span>
+                          <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                            X
+                          </span>
+                        </>
+                      )}
                     </button>
                   ))}
                 </div>

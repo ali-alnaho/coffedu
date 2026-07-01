@@ -18,7 +18,10 @@ function useHallForm() {
   const hallNameRef = useRef<HTMLInputElement | null>(null);
   const [editingHallId, setEditingHallId] = useState<string | null>(null);
 
-  const { halls, addHall, updateHall, deleteHall } = useHallsStore();
+  const halls = useHallsStore((state) => state.halls);
+  const addHall = useHallsStore((state) => state.addHall);
+  const updateHall = useHallsStore((state) => state.updateHall);
+  const deleteHall = useHallsStore((state) => state.deleteHall);
 
   const resetForm = () => {
     setHallForm(INITIAL_DATA);
