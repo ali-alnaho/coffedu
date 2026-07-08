@@ -4,18 +4,22 @@ import { useHallSeatingStore } from '../store/useHallSeatingStore';
 function useHallSeat() {
   const halls = useHallsStore((state) => state.halls);
   const emptySeating = useHallSeatingStore((state) => state.emptySeating);
-  const generateSeating = useHallSeatingStore((state) => state.generate);
-  const toggleSeat = useHallSeatingStore((state) => state.toggleSeat);
+  const generateHallSeating = useHallSeatingStore(
+    (state) => state.generateHallSeating
+  );
+  const toggleSeatStatus = useHallSeatingStore(
+    (state) => state.toggleSeatStatus
+  );
 
   function generate() {
-    generateSeating(halls);
+    generateHallSeating(halls);
   }
   function handleToggleSeat(
     hallId: string,
     rowIndex: number,
     colIndex: number
   ) {
-    toggleSeat(hallId, rowIndex, colIndex);
+    toggleSeatStatus(hallId, rowIndex, colIndex);
   }
   return { generate, handleToggleSeat, emptySeating };
 }

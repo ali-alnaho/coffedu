@@ -5,15 +5,22 @@ import toggleSeatStatus from '../services/logic/toggleSeatStatus';
 
 type HallSeatingStore = {
   emptySeating: HallSeating[];
-  generate: (halls: Halls[]) => void;
-  toggleSeat: (hallId: string, rowIndex: number, colIndex: number) => void;
+  generateHallSeating: (halls: Halls[]) => void;
+  toggleSeatStatus: (
+    hallId: string,
+    rowIndex: number,
+    colIndex: number
+  ) => void;
+  //setDistributedSeating: (newSeating: HallSeating[]) => void;
 };
+
 export const useHallSeatingStore = create<HallSeatingStore>((set) => ({
   emptySeating: [],
 
-  generate: (halls) => set({ emptySeating: generateEmpteSeat(halls) }),
+  generateHallSeating: (halls) =>
+    set({ emptySeating: generateEmpteSeat(halls) }),
 
-  toggleSeat: (hallId, rowIndex, colIndex) =>
+  toggleSeatStatus: (hallId, rowIndex, colIndex) =>
     set((state) => ({
       emptySeating: toggleSeatStatus(
         state.emptySeating,
@@ -22,4 +29,6 @@ export const useHallSeatingStore = create<HallSeatingStore>((set) => ({
         colIndex
       ),
     })),
+
+  //setDistributedSeating: (newSeating) => set({ emptySeating: newSeating }),
 }));

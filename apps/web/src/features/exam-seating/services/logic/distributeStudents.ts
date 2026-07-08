@@ -1,4 +1,4 @@
-import { HallSeating } from '@coffedu/contracts';
+import { HallSeating, Seat } from '@coffedu/contracts';
 
 type Student = {
   id: string;
@@ -10,32 +10,59 @@ type Student = {
 // (step 3) => input emptySeating from (step 2) and studentsList from db
 // this function generate hallsSeating and full it with student
 function distributeStudents(
-  hallsSeating: HallSeating[],
+  emptySeating: HallSeating[],
   studentsList: Student[]
 ): HallSeating[] {
-  let studentIndex = 0;
+  let nextStudentIndex = 0;
 
-  for (const hall of hallsSeating) {
-    for (const row of hall.seats) {
-      for (const seat of row) {
-        if (studentIndex >= studentsList.length) {
-          return hallsSeating;
+  const hallSeating = emptySeating.map((hall) => {
+    const updatedSeats = hall.seats.map((row) => {
+      return row.map((seat) => {
+        if (nextStudentIndex >= studentsList.length) {
+          return seat;
         }
         if (seat.status === 'available') {
-          seat.student = {
-            id: studentsList[studentIndex].id,
-            name: studentsList[studentIndex].name,
+          const setStudent = {
+            id: studentsList[nextStudentIndex].id,
+            name: studentsList[nextStudentIndex].name,
           };
-          seat.status = 'occupied';
 
-          studentIndex++;
+          const updatedSeat: Seat = {
+            ...seat,
+            student: setStudent,
+            status: 'occupied',
+          };
+
+          nextStudentIndex++;
+          return updatedSeat;
         }
-      }
-    }
-  }
-
-  console.log(JSON.stringify(hallsSeating, null, 2));
-  return hallsSeating;
+        return seat;
+      });
+    });
+    return { ...hall, seats: updatedSeats };
+  });
+  console.log(JSON.stringify(hallSeating, null, 2));
+  return hallSeating;
 }
 
 export default distributeStudents;
+
+// for (const hall of hallsSeating) {
+//   for (const row of hall.seats) {
+//     for (const seat of row) {
+//       if (studentIndex >= studentsList.length) {
+//         return hallsSeating;
+//       }
+//       if (seat.status === 'available') {
+//         seat.student = {
+//           id: studentsList[studentIndex].id,
+//           name: studentsList[studentIndex].name,
+//         };
+//         seat.status = 'occupied';
+//         studentIndex++;
+//       }
+//     }
+//   }
+// }
+// console.log(JSON.stringify(hallsSeating, null, 2));
+// return hallsSeating;
