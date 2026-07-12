@@ -1,6 +1,6 @@
 import { Seat, HallSeating, Halls } from '@coffedu/contracts';
 import { v4 as uuidv4 } from 'uuid';
-// (step 2) => input Halls[] from (step 1) and generate HallSeating[] fro (step 3)
+// (step 2) => input Halls[] from (step 1) and generate HallSeating[] for (step 3)
 // this function generate Emptye Seats with type Seat[][]
 function generateEmpteSeat(hallaList: Halls[]): HallSeating[] {
   const emptySeating: HallSeating[] = [];
@@ -26,6 +26,10 @@ function generateEmpteSeat(hallaList: Halls[]): HallSeating[] {
       hallId: hall.id,
       hallName: hall.hall.hallName,
       seats: hallMap,
+      layout: {
+        verticalAisles: [],
+        horizontalAisles: [],
+      },
     });
   }
   //console.log(JSON.stringify(emptySeating, null, 2));

@@ -86,9 +86,11 @@ function useHallForm() {
           row: parsed.row,
         },
       };
+
       addHall(newHall);
     }
 
+    //console.log(halls);
     resetForm(); // reset
     hallNameRef.current?.focus();
   };

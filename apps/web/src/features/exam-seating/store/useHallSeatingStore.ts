@@ -2,6 +2,10 @@ import { Halls, HallSeating } from '@coffedu/contracts';
 import { create } from 'zustand';
 import generateEmpteSeat from '../services/logic/generateEmpteSeat';
 import toggleSeatStatus from '../services/logic/toggleSeatStatus';
+import {
+  toggleVerticalAisle,
+  toggleHorizontalAisle,
+} from '../services/logic/toggleAisle';
 
 type HallSeatingStore = {
   emptySeating: HallSeating[];
@@ -11,7 +15,9 @@ type HallSeatingStore = {
     rowIndex: number,
     colIndex: number
   ) => void;
-  //setDistributedSeating: (newSeating: HallSeating[]) => void;
+
+  toggleVertical: (hallId: string, columnIndex: number) => void;
+  toggleHorizontal: (hallId: string, rowIndex: number) => void;
 };
 
 export const useHallSeatingStore = create<HallSeatingStore>((set) => ({
@@ -30,5 +36,17 @@ export const useHallSeatingStore = create<HallSeatingStore>((set) => ({
       ),
     })),
 
-  //setDistributedSeating: (newSeating) => set({ emptySeating: newSeating }),
+  toggleVertical: (hallId, columnIndex) =>
+    set((state) => ({
+      emptySeating: toggleVerticalAisle(
+        state.emptySeating,
+        hallId,
+        columnIndex
+      ),
+    })),
+
+  toggleHorizontal: (hallId, rowIndex) =>
+    set((state) => ({
+      emptySeating: toggleHorizontalAisle(state.emptySeating, hallId, rowIndex),
+    })),
 }));
