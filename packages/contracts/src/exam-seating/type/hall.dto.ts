@@ -28,11 +28,17 @@ export type Seat = {
   notes?: string;
 };
 
+export type HallLayout = {
+  verticalAisles: number[];
+  horizontalAisles: number[];
+};
+
 // step 3 ------------------
 export type HallSeating = {
   hallId: string;
   hallName: string;
   seats: Seat[][];
+  layout: HallLayout;
 };
 
 export type HallFormError = Partial<Record<keyof HallFormDto, string[]>>;
