@@ -1,5 +1,35 @@
 import useHallSeat from '../hooks/useHallSeat';
-import React from 'react';
+import Seat from './Seat';
+import VerticalAisle from './VerticalAisle';
+import HorizontalAisle from './HorizontalAisle';
+
+// Builds a track list like "48px 20px 48px 20px 48px" —
+function buildTracks(size: number, gap: string, cell: string) {
+  const tracks: string[] = [];
+  for (let i = 0; i < size; i++) {
+    //if count = 3 so 3 loop the first loop => tracks = [48px]
+    tracks.push(cell);
+
+    // if 0 < 3 -1 => true =>  [48px , 14px]
+    // if 1 < 3 -1 => true => [48px, 14px , 48px , 14px]
+    // if 2 < 3 -1 => false => [48px, 14px , 48px , 14px, 48px]; No gap
+    if (i < size - 1) tracks.push(gap);
+  }
+  return tracks.join(' ');
+
+  // ┌───┬───┬───┬───┬───┐
+  // │ S │ G │ S │ G │ S │
+  // ├───┼───┼───┼───┼───┤
+  // │ G │   │ G │   │ G │
+  // ├───┼───┼───┼───┼───┤
+  // │ S │ G │ S │ G │ S │
+  // ├───┼───┼───┼───┼───┤
+  // │ G │   │ G │   │ G │
+  // ├───┼───┼───┼───┼───┤
+  // │ S │ G │ S │ G │ S │
+  // └───┴───┴───┴───┴───┘
+  // Seat in individual spaces
+}
 
 export default function HallSeat() {
   const {
@@ -9,6 +39,7 @@ export default function HallSeat() {
     handelToggleHorizontalAisle,
     emptySeating,
   } = useHallSeat();
+
   return (
     <div>
       <p>generate seats</p>
@@ -18,103 +49,114 @@ export default function HallSeat() {
       >
         generate seats
       </button>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {emptySeating.map((hall) => (
-          <div
-            key={hall.hallId}
-            className="border border-gray-200 rounded-lg shadow-sm p-4  bg-sky-500/50"
-          >
-            <div className="border-b pb-2 mb-4 text-center">
-              <h3 className="text-xl font-semibold text-gray-800">
-                {hall.hallName}
-              </h3>
-            </div>
 
-            <div className="flex flex-col gap-3 items-center">
-              {hall.seats.map((row, rowIndex) => (
-                <React.Fragment key={`row-${rowIndex}`}>
-                  <div className="flex gap-3 bg-gray-100">
-                    {row.map((seat, colIndex) => (
-                      <React.Fragment key={seat.id}>
-                        <button
-                          onClick={() =>
-                            handleToggleSeat(hall.hallId, rowIndex, colIndex)
-                          }
-                          className={`group relative w-12 h-12 flex items-center justify-center rounded border transition-all duration-200
-                            ${
-                              seat.status === 'blocked'
-                                ? 'bg-red-500 border-red-700 text-white'
-                                : 'bg-green-100 border-green-300 hover:bg-red-100'
-                            }`}
-                        >
-                          {seat.status === 'blocked' ? (
-                            <span className="font-bold text-lg">X</span>
-                          ) : (
-                            <>
-                              <span className="text-sm font-medium text-green-800 group-hover:opacity-0 transition-opacity">
-                                ({seat.row}-{seat.column})
-                              </span>
-                              <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                                X
-                              </span>
-                            </>
-                          )}
-                        </button>
-                        {colIndex < row.length - 1 && rowIndex === 0 ? (
-                          <div
-                            className=" h-full w-4 bg-gray-200"
-                            onClick={() =>
-                              handleToggleVerticalAisle(
-                                hall.hallId,
-                                colIndex + 1
-                              )
-                            }
-                          >
-                            {hall.layout.verticalAisles.includes(
-                              colIndex + 1
-                            ) ? (
-                              <span>|</span>
-                            ) : (
-                              <span
-                                style={{
-                                  backgroundColor: 'blue',
-                                  padding: '1px 10px',
-                                }}
-                              ></span>
-                            )}
-                          </div>
-                        ) : (
-                          <div></div>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                  {rowIndex < hall.seats.length - 1 ? (
-                    <div
-                      className=""
-                      onClick={() =>
-                        handelToggleHorizontalAisle(hall.hallId, rowIndex + 1)
+      <div>
+        {emptySeating.map((hall) => {
+          const rowCount = hall.seats.length;
+          const colCount = hall.seats[0]?.length ?? 0;
+
+          return (
+            <div key={hall.hallId} className="mb-8">
+              <h3>{hall.hallName}</h3>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: buildTracks(colCount, '14px', '48px'),
+                  gridTemplateRows: buildTracks(rowCount, '14px', '48px'),
+                  backgroundColor: 'black',
+                }}
+              >
+                {/* Seats: track = 2*index + 1 (the odd tracks) */}
+
+                {hall.seats.map((row, rowIndex) =>
+                  row.map((seat, colIndex) => (
+                    <Seat
+                      key={seat.id}
+                      seat={seat}
+                      onToggle={() =>
+                        handleToggleSeat(hall.hallId, rowIndex, colIndex)
                       }
-                    >
-                      {hall.layout.horizontalAisles.includes(rowIndex + 1) ? (
-                        <span>--</span>
-                      ) : (
-                        <span
-                          style={{
-                            backgroundColor: 'blue',
-                            padding: '1px 10px',
-                          }}
-                        ></span>
-                      )}
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
-                </React.Fragment>
-              ))}
+                      style={{
+                        //1 3 5 7 9
+                        gridColumn: colIndex * 2 + 1,
+                        gridRow: rowIndex * 2 + 1,
+                        width: ' 100%',
+                        height: '100%',
+                      }}
+                    />
+                  ))
+                )}
+
+                {/*
+                  Vertical aisles: ONE element per gap, not one per row.
+                  Track = 2*aisleIndex (the even column tracks).
+                  gridRow '1 / -1' spans every row track automatically —
+                  this is what makes it impossible for the aisle to
+                  misalign between rows the way the old spacer-div did.
+                */}
+
+                {Array.from(
+                  { length: Math.max(colCount - 1, 0) },
+                  (_, i) => i + 1
+                ).map((aisleIndex) => (
+                  <VerticalAisle
+                    style={{
+                      gridColumn: 2 * aisleIndex,
+                      gridRow: '1 / -1',
+                      width: '100%',
+                      height: '100%',
+                    }}
+                    key={`v-aisle-${aisleIndex}`}
+                    ToggleVertical={() =>
+                      handleToggleVerticalAisle(hall.hallId, aisleIndex)
+                    }
+                  >
+                    {hall.layout.verticalAisles.includes(aisleIndex) && (
+                      <span
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: 'red',
+                        }}
+                      ></span>
+                    )}
+                  </VerticalAisle>
+                ))}
+
+                {/* Horizontal aisles: same idea, transposed. */}
+
+                {Array.from(
+                  { length: Math.max(rowCount - 1, 0) },
+                  (_, i) => i + 1
+                ).map((aisleIndex) => (
+                  <HorizontalAisle
+                    style={{
+                      gridRow: 2 * aisleIndex,
+                      gridColumn: '1 / -1',
+                      width: '100%',
+                      height: '100%',
+                    }}
+                    key={`h-aisle-${aisleIndex}`}
+                    ToggleHorizontal={() =>
+                      handelToggleHorizontalAisle(hall.hallId, aisleIndex)
+                    }
+                  >
+                    {hall.layout.horizontalAisles.includes(aisleIndex) && (
+                      <span
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: 'blue',
+                        }}
+                      ></span>
+                    )}
+                  </HorizontalAisle>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
