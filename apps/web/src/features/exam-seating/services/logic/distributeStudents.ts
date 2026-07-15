@@ -5,6 +5,8 @@ type Student = {
   name: string;
   academicYear: string;
   status: string;
+  level: number;
+  department?: string;
 };
 
 // (step 3) => input emptySeating from (step 2) and studentsList from db
@@ -25,6 +27,8 @@ function distributeStudents(
           const setStudent = {
             id: studentsList[nextStudentIndex].id,
             name: studentsList[nextStudentIndex].name,
+            level: studentsList[nextStudentIndex].level,
+            department: studentsList[nextStudentIndex].department,
           };
 
           const updatedSeat: Seat = {

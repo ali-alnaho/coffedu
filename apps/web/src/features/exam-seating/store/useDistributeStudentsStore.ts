@@ -7,6 +7,8 @@ type Student = {
   name: string;
   academicYear: string;
   status: string;
+  level: number;
+  department?: string;
 };
 
 type DistributeStudentsStore = {

@@ -41,7 +41,7 @@ export default function DistributeStudents() {
                       ) : (
                         <span className="">
                           ({seat.row}-{seat.column}: {seat.student?.id}):
-                          {seat.student?.name}
+                          {seat.student?.name}:{seat.student?.level}
                         </span>
                       )}
                     </div>

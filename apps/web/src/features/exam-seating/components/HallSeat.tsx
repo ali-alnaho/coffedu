@@ -65,6 +65,9 @@ export default function HallSeat() {
                   gridTemplateColumns: buildTracks(colCount, '14px', '48px'),
                   gridTemplateRows: buildTracks(rowCount, '14px', '48px'),
                   backgroundColor: 'black',
+                  overflow: 'auto',
+                  justifyContent: 'center',
+                  alignContent: 'center',
                 }}
               >
                 {/* Seats: track = 2*index + 1 (the odd tracks) */}
@@ -132,6 +135,7 @@ export default function HallSeat() {
                 ).map((aisleIndex) => (
                   <HorizontalAisle
                     style={{
+                      // 2 4 6 8
                       gridRow: 2 * aisleIndex,
                       gridColumn: '1 / -1',
                       width: '100%',
