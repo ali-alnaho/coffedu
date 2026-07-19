@@ -7,9 +7,9 @@ type Student = {
   department?: string;
 };
 
-function generateStudentByLevel(student: Student[]) {
+function groupStudentsByLevel(student: Student[]) {
   const studentByLevel = new Map<number, Student[]>();
-  let largestGroup: Student[] = [];
+  //let largestGroup: Student[] = [];
 
   for (let i = 0; i < student.length; i++) {
     const currentStudent = student[i];
@@ -23,12 +23,12 @@ function generateStudentByLevel(student: Student[]) {
     const group = studentByLevel.get(studentLevel)!;
     group.push(currentStudent);
 
-    if (largestGroup.length < group.length) {
-      largestGroup = group;
-    }
+    // if (largestGroup.length < group.length) {
+    //   largestGroup = group;
+    // }
   }
 
-  return { studentByLevel, largestGroup };
+  return studentByLevel;
 }
 
-export default generateStudentByLevel;
+export default groupStudentsByLevel;

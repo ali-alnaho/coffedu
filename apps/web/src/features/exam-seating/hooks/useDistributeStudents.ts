@@ -1,19 +1,33 @@
+import { useState } from 'react';
 import { useDistributeStudentsStore } from '../store/useDistributeStudentsStore';
 import { student } from '../services/api/StudentData';
 import { useHallSeatingStore } from '../store/useHallSeatingStore';
 
-import generateStudentByLevel from '../services/logic/generateStudents/generateStudentByLevel';
-import distributeByLevel from '../services/logic/rules/distributeByLevel';
+import groupStudentsByLevel from '../services/logic/groupStudents/groupStudentsByLevel';
+import roundRobinByLevel from '../services/logic/rules/roundRobinByLevel';
+import groupByDepartmentAndLevel from '../services/logic/groupStudents/groupByDepartmentAndLevel';
 
-type DistributionRule =
-  | 'SEQUENTIAL'
-  | 'LEVEL'
-  | 'DEPARTMENT'
-  | 'LEVEL_THEN_DEPARTMENT'
-  | 'ROUND_ROBIN'
-  | 'RANDOM';
+import { DistributionRule } from '@coffedu/contracts';
+
+type Student = {
+  id: string;
+  name: string;
+  academicYear: string;
+  status: string;
+  level: number;
+  department?: string;
+};
 
 function useDistributeStudents() {
+  // set Rules
+  const [selectRule, setSelectRule] = useState<string>('RANDOM');
+  const rules: DistributionRule[] = [
+    'LEVEL',
+    'DEPARTMENT',
+    'ROUND_ROBIN',
+    'RANDOM',
+  ];
+
   // useHallSeatingStore
   const emptySeating = useHallSeatingStore((state) => state.emptySeating);
 
@@ -25,22 +39,34 @@ function useDistributeStudents() {
     (state) => state.generateExamHallSeating
   );
 
-  // generateStudentByLevel
-  const { studentByLevel, largestGroup } = generateStudentByLevel(student);
-
-  // rules 1- byLevel.
-  // Round Robin
-  const byLevel = distributeByLevel(studentByLevel, largestGroup);
-
-  // rules 2-distributeByDepartment()
-  // rules 3-distributeRandom()
+  // groupStudentsByLevel
+  const studentByLevel = groupStudentsByLevel(student);
+  // groupByDepartmentAndLevel
+  const { studentByDepartmentAndLevel, departmentArray } =
+    groupByDepartmentAndLevel(student);
+  // groupRandom
 
   function distribute() {
-    console.log(studentByLevel, byLevel);
-    return generateExamHallSeating(emptySeating, byLevel);
-  }
+    let studentsForDistribution: Student[];
+    switch (selectRule) {
+      case 'LEVEL':
+      //   studentsForDistribution =
+      //   break;
 
-  return { distribute, examHallSeating };
+      case 'DEPARTMENT':
+      // studentsForDistribution = flattenGroupedData(departmentArray);
+      // break;
+
+      case 'ROUND_ROBIN':
+        studentsForDistribution = roundRobinByLevel(studentByLevel);
+        break;
+
+      default:
+        studentsForDistribution = student;
+    }
+    return generateExamHallSeating(emptySeating, studentsForDistribution);
+  }
+  return { distribute, examHallSeating, rules, selectRule, setSelectRule };
 }
 
 export default useDistributeStudents;

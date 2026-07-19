@@ -3,13 +3,29 @@ import { PDFViewer } from '@react-pdf/renderer';
 import { SeatingDocument } from '../pdf/SeatingDocument';
 
 export default function DistributeStudents() {
-  const { distribute, examHallSeating } = useDistributeStudents();
+  const { distribute, examHallSeating, rules, selectRule, setSelectRule } =
+    useDistributeStudents();
 
   return (
     <div>
       <hr />
 
       <p>distribute student</p>
+
+      {rules.map((rule) => (
+        <label key={rule} style={{ padding: '10px' }}>
+          <input
+            type="radio"
+            name="rule"
+            value={rule}
+            checked={selectRule === rule}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSelectRule(e.target.value);
+            }}
+          />
+          <span>{rule.toLowerCase()}</span>
+        </label>
+      ))}
 
       <button
         onClick={distribute}

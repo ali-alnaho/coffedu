@@ -17,6 +17,8 @@ export type Halls = {
 export type ExamStudent = {
   id: string;
   name: string;
+  level: number;
+  department?: string;
 };
 
 export type Seat = {
@@ -42,3 +44,9 @@ export type HallSeating = {
 };
 
 export type HallFormError = Partial<Record<keyof HallFormDto, string[]>>;
+
+export type DistributionRule =
+  | 'LEVEL'
+  | 'DEPARTMENT'
+  | 'ROUND_ROBIN'
+  | 'RANDOM';

@@ -1,11 +1,11 @@
 import { Halls, HallSeating } from '@coffedu/contracts';
 import { create } from 'zustand';
 import generateEmpteSeat from '../services/logic/generateEmpteSeat';
-import toggleSeatStatus from '../services/logic/toggleSeatStatus';
+import toggleSeatStatus from '../services/logic/toggle/toggleSeatStatus';
 import {
   toggleVerticalAisle,
   toggleHorizontalAisle,
-} from '../services/logic/toggleAisle';
+} from '../services/logic/toggle/toggleAisle';
 
 type HallSeatingStore = {
   emptySeating: HallSeating[];

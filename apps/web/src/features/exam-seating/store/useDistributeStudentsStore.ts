@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { HallSeating } from '@coffedu/contracts';
-import distributeStudents from '../services/logic/distributeStudents';
+import distributeRowMajor from '../services/logic/distributeStudents/distributeRowMajor';
 
 type Student = {
   id: string;
@@ -24,6 +24,6 @@ export const useDistributeStudentsStore = create<DistributeStudentsStore>(
   (set) => ({
     examHallSeating: [],
     generateExamHallSeating: (emptyHallSeating, students) =>
-      set({ examHallSeating: distributeStudents(emptyHallSeating, students) }),
+      set({ examHallSeating: distributeRowMajor(emptyHallSeating, students) }),
   })
 );
