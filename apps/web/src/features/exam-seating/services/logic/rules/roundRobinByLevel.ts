@@ -1,11 +1,4 @@
-type Student = {
-  id: string;
-  name: string;
-  academicYear: string;
-  status: string;
-  level: number;
-  department?: string;
-};
+import { Student } from '@coffedu/contracts';
 
 function roundRobinByLevel(studentByLevel: Map<number, Student[]>) {
   const groups = Array.from(studentByLevel.values());

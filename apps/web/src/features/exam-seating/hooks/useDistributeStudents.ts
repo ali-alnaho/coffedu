@@ -3,20 +3,11 @@ import { useDistributeStudentsStore } from '../store/useDistributeStudentsStore'
 import { student } from '../services/api/StudentData';
 import { useHallSeatingStore } from '../store/useHallSeatingStore';
 
-import groupStudentsByLevel from '../services/logic/groupStudents/groupStudentsByLevel';
+import { DistributionRule, Student } from '@coffedu/contracts';
+
 import roundRobinByLevel from '../services/logic/rules/roundRobinByLevel';
-import groupByDepartmentAndLevel from '../services/logic/groupStudents/groupByDepartmentAndLevel';
-
-import { DistributionRule } from '@coffedu/contracts';
-
-type Student = {
-  id: string;
-  name: string;
-  academicYear: string;
-  status: string;
-  level: number;
-  department?: string;
-};
+import flattenByDepartmentThenLevel from '../services/logic/rules/flattenByDepartmentThenLevel';
+import groupStudents from '../services/logic/groupStudents/groupStudents';
 
 function useDistributeStudents() {
   // set Rules
@@ -28,6 +19,9 @@ function useDistributeStudents() {
     'RANDOM',
   ];
 
+  // set horizontal, vertical
+  const [direction, setDirection] = useState<string>('vertical');
+
   // useHallSeatingStore
   const emptySeating = useHallSeatingStore((state) => state.emptySeating);
 
@@ -35,38 +29,101 @@ function useDistributeStudents() {
   const examHallSeating = useDistributeStudentsStore(
     (state) => state.examHallSeating
   );
-  const generateExamHallSeating = useDistributeStudentsStore(
-    (state) => state.generateExamHallSeating
+  const generateExamHallSeatingByRow = useDistributeStudentsStore(
+    (state) => state.generateExamHallSeatingByRow
+  );
+  const generateExamHallSeatingByColumn = useDistributeStudentsStore(
+    (state) => state.generateExamHallSeatingByColumn
   );
 
-  // groupStudentsByLevel
-  const studentByLevel = groupStudentsByLevel(student);
-  // groupByDepartmentAndLevel
-  const { studentByDepartmentAndLevel, departmentArray } =
-    groupByDepartmentAndLevel(student);
-  // groupRandom
+  const generateExamHallSeatingByColumnByLevel = useDistributeStudentsStore(
+    (state) => state.generateExamHallSeatingByColumnByLevel
+  );
 
   function distribute() {
+    // groupStudentsByLevel
+    const studentByLevel = groupStudents(student, 'LEVEL');
+    // groupByDepartmentAndLevel
+    const studentByDepartmentAndLevel = groupStudents(student, 'DEPARTMENT');
+
     let studentsForDistribution: Student[];
     switch (selectRule) {
       case 'LEVEL':
-      //   studentsForDistribution =
-      //   break;
+        return generateExamHallSeatingByColumnByLevel(
+          emptySeating,
+          studentByLevel
+        );
 
       case 'DEPARTMENT':
-      // studentsForDistribution = flattenGroupedData(departmentArray);
-      // break;
+        const flattenStudent = flattenByDepartmentThenLevel(
+          studentByDepartmentAndLevel
+        );
+        studentsForDistribution = flattenStudent;
+        break;
 
       case 'ROUND_ROBIN':
-        studentsForDistribution = roundRobinByLevel(studentByLevel);
+        const rounedRobinStudent = roundRobinByLevel(studentByLevel);
+        studentsForDistribution = rounedRobinStudent;
+        break;
+
+      case 'RANDOM':
+        studentsForDistribution = student;
         break;
 
       default:
-        studentsForDistribution = student;
+        throw new Error(`Unsupported rule: ${selectRule}`);
     }
-    return generateExamHallSeating(emptySeating, studentsForDistribution);
+
+    if (direction === 'vertical') {
+      return generateExamHallSeatingByRow(
+        emptySeating,
+        studentsForDistribution
+      );
+    } else if (direction == 'horizontal') {
+      return generateExamHallSeatingByColumn(
+        emptySeating,
+        studentsForDistribution
+      );
+    }
   }
-  return { distribute, examHallSeating, rules, selectRule, setSelectRule };
+
+  return {
+    distribute,
+    examHallSeating,
+
+    // set Rules
+    rules,
+    selectRule,
+    setSelectRule,
+
+    // set horizontal, vertical
+    direction,
+    setDirection,
+  };
 }
 
 export default useDistributeStudents;
+
+// switch (selectRule) {
+//   case 'LEVEL':
+//     return generateExamHallSeatingByColumnByLevel(
+//       emptySeating,
+//       studentByLevel
+//     );
+
+//   case 'DEPARTMENT':
+//     const flattenStudent = flattenByDepartmentThenLevel(
+//       studentByDepartmentAndLevel
+//     );
+//     return generateExamHallSeatingByColumn(emptySeating, flattenStudent);
+
+//   case 'ROUND_ROBIN':
+//     const rounedRobinStudent = roundRobinByLevel(studentByLevel);
+//     return generateExamHallSeatingByRow(emptySeating, rounedRobinStudent);
+
+//   case 'RANDOM':
+//     return generateExamHallSeatingByRow(emptySeating, student);
+
+//   default:
+//     throw new Error(`Unsupported rule: ${selectRule}`);
+// }

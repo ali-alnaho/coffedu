@@ -1,20 +1,10 @@
-import { HallSeating, Seat, DistributionRule } from '@coffedu/contracts';
-
-type Student = {
-  id: string;
-  name: string;
-  academicYear: string;
-  status: string;
-  level: number;
-  department?: string;
-};
+import { HallSeating, Seat, Student } from '@coffedu/contracts';
 
 // (step 3) => input emptySeating from (step 2) and studentsList from db
 // this function generate hallsSeating and full it with student
 function distributeRowMajor(
   emptySeating: HallSeating[],
   studentsList: Student[]
-  //rule: DistributionRule
 ): HallSeating[] {
   let nextStudentIndex = 0;
 

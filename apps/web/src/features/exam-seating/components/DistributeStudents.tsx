@@ -3,8 +3,15 @@ import { PDFViewer } from '@react-pdf/renderer';
 import { SeatingDocument } from '../pdf/SeatingDocument';
 
 export default function DistributeStudents() {
-  const { distribute, examHallSeating, rules, selectRule, setSelectRule } =
-    useDistributeStudents();
+  const {
+    distribute,
+    examHallSeating,
+    rules,
+    selectRule,
+    setSelectRule,
+    direction,
+    setDirection,
+  } = useDistributeStudents();
 
   return (
     <div>
@@ -12,20 +19,49 @@ export default function DistributeStudents() {
 
       <p>distribute student</p>
 
-      {rules.map((rule) => (
-        <label key={rule} style={{ padding: '10px' }}>
+      <div>
+        {rules.map((rule) => (
+          <label key={rule} style={{ padding: '10px' }}>
+            <input
+              type="radio"
+              name="rule"
+              value={rule}
+              checked={selectRule === rule}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSelectRule(e.target.value);
+              }}
+            />
+            <span>{rule.toLowerCase()}</span>
+          </label>
+        ))}
+      </div>
+
+      <div>
+        <label style={{ padding: '10px' }}>
           <input
             type="radio"
-            name="rule"
-            value={rule}
-            checked={selectRule === rule}
+            name="direction"
+            value="vertical"
+            checked={direction === 'vertical'}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSelectRule(e.target.value);
+              setDirection(e.target.value);
             }}
           />
-          <span>{rule.toLowerCase()}</span>
+          <span>vertical</span>
         </label>
-      ))}
+        <label style={{ padding: '10px' }}>
+          <input
+            type="radio"
+            name="direction"
+            value="horizontal"
+            checked={direction === 'horizontal'}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setDirection(e.target.value);
+            }}
+          />
+          <span>horizontal</span>
+        </label>
+      </div>
 
       <button
         onClick={distribute}
