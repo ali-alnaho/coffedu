@@ -18,7 +18,8 @@ export type ExamStudent = {
   id: string;
   name: string;
   level: number;
-  department?: string;
+  department: string;
+  studentCode: string;
 };
 
 export type Seat = {

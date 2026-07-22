@@ -1,6 +1,7 @@
 import useDistributeStudents from '../hooks/useDistributeStudents';
 import { PDFViewer } from '@react-pdf/renderer';
 import { SeatingDocument } from '../pdf/SeatingDocument';
+import Label from './Label';
 
 export default function DistributeStudents() {
   const {
@@ -82,21 +83,7 @@ export default function DistributeStudents() {
               {hall.seats.map((row, rowIndex) => (
                 <div key={`row-${rowIndex}`} className="flex">
                   {row.map((seat) => (
-                    <div
-                      key={seat.id}
-                      className="text-sm font-medium text-green-800 border-2 p-2"
-                    >
-                      {seat.status === 'blocked' ? (
-                        <span>
-                          ({seat.row}-{seat.column}): X
-                        </span>
-                      ) : (
-                        <span className="">
-                          ({seat.row}-{seat.column}: {seat.student?.id}):
-                          {seat.student?.name}:{seat.student?.level}
-                        </span>
-                      )}
-                    </div>
+                    <Label key={seat.id} seat={seat} />
                   ))}
                 </div>
               ))}

@@ -6,8 +6,12 @@ import { useHallSeatingStore } from '../store/useHallSeatingStore';
 import { DistributionRule, Student } from '@coffedu/contracts';
 
 import roundRobinByLevel from '../services/logic/rules/roundRobinByLevel';
+import roundRobinByDepartment from '../services/logic/rules/roundRobinByDepartment';
+
 import flattenByDepartmentThenLevel from '../services/logic/rules/flattenByDepartmentThenLevel';
 import groupStudents from '../services/logic/groupStudents/groupStudents';
+
+import interleaveNoAdjacentSameGroup from '../services/logic/rules/interleaveNoAdjacentSameGroup';
 
 function useDistributeStudents() {
   // set Rules
@@ -16,6 +20,7 @@ function useDistributeStudents() {
     'LEVEL',
     'DEPARTMENT',
     'ROUND_ROBIN',
+    'ROUND_ROBIN_BY_DEPARTMENT',
     'RANDOM',
   ];
 
@@ -58,12 +63,22 @@ function useDistributeStudents() {
         const flattenStudent = flattenByDepartmentThenLevel(
           studentByDepartmentAndLevel
         );
+        // const flattenStudent = interleaveNoAdjacentSameGroup(
+        //   studentByDepartmentAndLevel
+        // );
         studentsForDistribution = flattenStudent;
         break;
 
       case 'ROUND_ROBIN':
         const rounedRobinStudent = roundRobinByLevel(studentByLevel);
         studentsForDistribution = rounedRobinStudent;
+        break;
+
+      case 'ROUND_ROBIN_BY_DEPARTMENT':
+        const rounedRobinByDepartmentStudent = roundRobinByDepartment(
+          studentByDepartmentAndLevel
+        );
+        studentsForDistribution = rounedRobinByDepartmentStudent;
         break;
 
       case 'RANDOM':
@@ -75,12 +90,12 @@ function useDistributeStudents() {
     }
 
     if (direction === 'vertical') {
-      return generateExamHallSeatingByRow(
+      return generateExamHallSeatingByColumn(
         emptySeating,
         studentsForDistribution
       );
     } else if (direction == 'horizontal') {
-      return generateExamHallSeatingByColumn(
+      return generateExamHallSeatingByRow(
         emptySeating,
         studentsForDistribution
       );

@@ -20,6 +20,7 @@ function distributeRowMajor(
             name: studentsList[nextStudentIndex].name,
             level: studentsList[nextStudentIndex].level,
             department: studentsList[nextStudentIndex].department,
+            studentCode: studentsList[nextStudentIndex].studentCode,
           };
 
           const updatedSeat: Seat = {
@@ -36,7 +37,7 @@ function distributeRowMajor(
     });
     return { ...hall, seats: updatedSeats };
   });
-  console.log(JSON.stringify(hallSeating, null, 2));
+  //console.log(JSON.stringify(hallSeating, null, 2));
   return hallSeating;
 }
 

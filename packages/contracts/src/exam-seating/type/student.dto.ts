@@ -4,5 +4,6 @@ export type Student = {
   academicYear: string;
   status: string;
   level: number;
-  department?: string;
+  department: string;
+  studentCode: string;
 };
