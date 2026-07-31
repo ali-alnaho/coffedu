@@ -20,13 +20,45 @@ enum EnrollmentStatus {
   WITHDRAWN
 }
 
+enum SchoolStatus {
+  PENDING_ACTIVATION
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
 // Role enum
 enum Role {
-  USER
+  PLATFORM_OWNER
+  SCHOOL_ADMIN
   STUDENT
   MANAGER
   TEACHER
-  ADMIN
+}
+
+model School {
+  id      String  @id @default(cuid())
+  name    String
+  code    String  @unique
+  phone   String?
+  email   String?
+  address String?
+
+  status SchoolStatus @default(PENDING_ACTIVATION)
+
+  // Dates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations 
+  users                   User[]
+  teachers                Teacher[]
+  students                Student[]
+  academicYears           AcademicYear[]
+  gradeLevels             GradeLevel[]
+  studentEnrollments      StudentEnrollment[]
+  subjects                Subject[]
+  enrollmentSubjectGrades EnrollmentSubjectGrade[]
 }
 
 // User table 
@@ -46,7 +78,7 @@ model User {
   createdAt DateTime @default(now())
 
   // Relations 
-  role Role @default(USER)
+  role Role
 
   // FK + @unique ==> relation one to one with student model
   //  @unique ==> only one row can have that FK value
@@ -56,6 +88,9 @@ model User {
   // relation one to one with Teacher model
   teacherId String?  @unique
   teacher   Teacher? @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  school   School? @relation(fields: [schoolId], references: [id])
+  schoolId String?
 }
 
 // teacher Table 
@@ -86,6 +121,9 @@ model Teacher {
 
   // Relations 
   user User?
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId String
 }
 
 // student table
@@ -108,15 +146,18 @@ model Student {
   updatedAt DateTime @updatedAt
 
   // Relations
-  studentEnrollments StudentEnrollments[]
-  users              User?
+  studentEnrollments StudentEnrollment[]
+  user               User?
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId String
 }
 
 // acadimic_years model 
-model AcademicYears {
+model AcademicYear {
   // Primary key
   id        String   @id @default(cuid())
-  year      String   @unique // e.g. "2024-2025" 
+  year      String // e.g. "2024-2025" 
   startDate DateTime
   endDate   DateTime
   isActive  Boolean  @default(false)
@@ -126,23 +167,71 @@ model AcademicYears {
   updatedAt DateTime @updatedAt
 
   // Relations
-  studentEnrollments StudentEnrollments[]
+  studentEnrollments StudentEnrollment[]
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId String
+
+  @@unique([schoolId, year])
 }
 
-model GradeLevels {
+model GradeLevel {
   // Primary Key
   id    String @id @default(cuid())
-  level Int    @unique // e.g. level = 1
+  level Int // e.g. level = 1
   name  String // e.g. name = "First Grade"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  studentEnrollments StudentEnrollments[]
+  studentEnrollments StudentEnrollment[]
+  subjects           Subject[]
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId String
+
+  @@unique([schoolId, level])
 }
 
-model StudentEnrollments {
+model Subject {
+  id          String @id @default(cuid())
+  subjectName String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollmentSubjectGrades EnrollmentSubjectGrade[]
+
+  gradeLevel   GradeLevel @relation(fields: [gradeLevelId], references: [id])
+  gradeLevelId String
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId String
+
+  @@unique([schoolId, gradeLevelId, subjectName])
+}
+
+model EnrollmentSubjectGrade {
+  id         String @id @default(cuid())
+  finalScore Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  subjectId String
+
+  studentEnrollment   StudentEnrollment @relation(fields: [studentEnrollmentId], references: [id])
+  studentEnrollmentId String
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId String
+
+  @@unique([studentEnrollmentId, subjectId])
+}
+
+model StudentEnrollment {
   id         String @id @default(cuid())
   // relation field 
   studentId  String
@@ -152,9 +241,14 @@ model StudentEnrollments {
   status EnrollmentStatus @default(ACTIVE)
 
   // relations 
-  student      Student       @relation(fields: [studentId], references: [id])
-  gradeLevel   GradeLevels   @relation(fields: [gradeId], references: [id])
-  academicYear AcademicYears @relation(fields: [academicId], references: [id])
+  enrollmentSubjectGrades EnrollmentSubjectGrade[]
+
+  student      Student      @relation(fields: [studentId], references: [id])
+  gradeLevel   GradeLevel   @relation(fields: [gradeId], references: [id])
+  academicYear AcademicYear @relation(fields: [academicId], references: [id])
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId String
 
   @@unique([studentId, academicId])
 }
@@ -207,3 +301,36 @@ model StudentEnrollments {
 //  └──────────────────┘  │ endDate          │  └────────────────────┘
 //                        │ isActive         │
 //                        └──────────────────┘
+
+/**
+ * Why StudentEnrollment exists:
+ * - Keeps the student's academic history.
+ * - Separates student identity from academic records.
+ * - Creates a new enrollment every academic year instead of updating old data.
+ * - Supports promotion, repeating a grade, and class transfers.
+ * - Prevents losing historical academic data.
+ * - Serves as the main reference for attendance, grades, exams, reports, and exam seating.
+ * - Reflects the real-world process where a student enrolls each academic year.
+ */
+
+/**
+ * StudentEnrollment Rules
+ * ✔ CREATE
+ * - Create the first enrollment when registering a student.
+ * - Create a new enrollment when promoting a student.
+ * - Create a new enrollment when repeating a grade.
+ * - Create a new enrollment whenever a new academic year begins.
+ * ✔ UPDATE
+ * - status
+ * - notes
+ * - Any future administrative fields that do not change the enrollment identity.
+ * ✖ NEVER UPDATE
+ * - studentId
+ * - academicId
+ * - gradeId
+ * Changing any of these fields means creating a new StudentEnrollment record.
+ * ✖ NEVER DELETE
+ * StudentEnrollment records are permanent historical records.
+ * Deleting them would break the student's academic history and may invalidate
+ * attendance, grades, exams, reports, and other related data.
+ */

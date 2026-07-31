@@ -4,6 +4,8 @@ import prisma from '../../db.js';
 import bcrypt from 'bcrypt';
 import Jwt from 'jsonwebtoken';
 import { Role } from '../../generated/prisma/enums.js';
+import { asyncHandler } from '../../utils/asyncHandler.js';
+import { UnauthorizedError, AppError } from '../../errors/AppError.js';
 
 export async function register(req: Request, res: Response) {
   try {
@@ -21,7 +23,7 @@ export async function register(req: Request, res: Response) {
         password: hashedPassword,
 
         // Enforce USER role by default so users cannot self-assign ADMIN privileges
-        role: Role.USER,
+        role: Role.STUDENT,
       },
     });
 
@@ -48,58 +50,59 @@ export async function register(req: Request, res: Response) {
   }
 }
 
-export async function login(req: Request, res: Response) {
-  try {
-    const { userName, password } = loginSchema.parse(req.body);
+export const login = asyncHandler(async (req: Request, res: Response) => {
+  const { userName, password } = loginSchema.parse(req.body);
 
-    // find user by email in user module
-    const user = await prisma.user.findUnique({
-      where: {
-        userName,
-      },
-    });
-    if (!user) throw new Error('User not found');
+  // find user by email in user module
+  const user = await prisma.user.findUnique({
+    where: {
+      userName,
+    },
+    select: {
+      id: true,
+      role: true,
+      schoolId: true,
+      password: true,
+    },
+  });
 
-    // check if user password = mudel password in database
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) throw new Error('Invalid password');
+  const DUMMY_HASH =
+    '$2b$12$TKh8H1.P7M6v0N2n8m7jWuQz4b9r1L6q9bQ5h0WQm0J7W9W7vJ8Ka';
 
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      throw new Error('JWT_SECRET is missing');
-    }
-    const token = Jwt.sign(
-      {
-        userId: user.id,
-        role: user.role,
-      },
-      jwtSecret,
-
-      // ?????
-      { expiresIn: '1d' }
-    );
-
-    res.json({
-      success: true,
-      data: { user, token },
-    });
-  } catch (error) {
-    if (error instanceof ZodError) {
-      res.status(400).json({
-        message: 'Validation failed',
-        errors: error.issues.map((issue) => ({
-          field: issue.path.join('.'),
-          message: issue.message,
-        })),
-      });
-      return;
-    }
-    res.status(401).json({
-      success: false,
-      message: 'error.message',
-    });
+  if (!user) {
+    await bcrypt.compare(password, DUMMY_HASH);
+    throw new UnauthorizedError('Invalid credentials');
   }
-}
 
-// add jwt and test token
+  // check if user password = mudel password in database
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) throw new UnauthorizedError('Invalid credentials');
+
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new AppError(500, 'JWT_SECRET is missing', false);
+  }
+
+  // JavaScript destructuring
+  // Remove the password from the user object while creating a new object with the remaining properties.
+  const { password: _, ...userWithoutPassword } = user;
+
+  const tokenPayload = {
+    userId: user.id,
+    role: user.role,
+    schoolId: user.schoolId,
+  };
+  const token = Jwt.sign(tokenPayload, jwtSecret, {
+    // Set the token to expire after 1 day to reduce the risk of long-term misuse.
+    expiresIn: '1d',
+    // Use the HS256 signing algorithm to securely sign and verify the JWT.
+    algorithm: 'HS256',
+  });
+
+  res.json({
+    success: true,
+    data: { user: userWithoutPassword, token },
+  });
+});
+
 // add refrush token
