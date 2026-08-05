@@ -14,7 +14,7 @@ const studentRouter = Router();
 studentRouter.get(
   '/students',
   authMiddleware,
-  requireRole(['USER']),
+  requireRole(['SCHOOL_ADMIN']),
   getAllStudents
 );
 studentRouter.get('/students/:id', getStudentById);

@@ -7,6 +7,7 @@ import util from 'util';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { Role } from '../../generated/prisma/enums.js';
+import { studentService } from './student.service.js';
 
 export const getAllStudents = async (req: Request, res: Response) => {
   try {
@@ -38,6 +39,9 @@ export const createNewStudent = async (
   res: Response
 ): Promise<void> => {
   try {
+    // const studentInput = StudentSchema.parse(req.body);
+    // const result = await studentService.createStudent(studentInput);
+
     const {
       firstName,
       fatherName,
@@ -109,6 +113,9 @@ export const createNewStudent = async (
       studentId: studentWithUser.newStudent.id,
       data: studentWithUser,
       fullName: getFullName(studentWithUser.newStudent),
+
+      // data: result.student,
+      // fullName: result.fullName,
     });
   } catch (error) {
     // get error from zod

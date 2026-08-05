@@ -36,6 +36,13 @@ enum Role {
   TEACHER
 }
 
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
 model School {
   id      String  @id @default(cuid())
   name    String
@@ -72,13 +79,17 @@ model User {
   familyName String?
   email      String? @unique
   userName   String  @unique
-  password   String
+  password   String?
 
   //Dates 
   createdAt DateTime @default(now())
 
   // Relations 
   role Role
+
+  status          UserStatus @default(ACTIVE)
+  activationToken String?    @unique
+  tokenExpiresAt  DateTime?
 
   // FK + @unique ==> relation one to one with student model
   //  @unique ==> only one row can have that FK value

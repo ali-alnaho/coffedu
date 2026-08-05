@@ -74,6 +74,9 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     throw new UnauthorizedError('Invalid credentials');
   }
 
+  // check if password for currrent user === null
+  if (!user.password) throw new UnauthorizedError('Invalid credentials');
+
   // check if user password = mudel password in database
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) throw new UnauthorizedError('Invalid credentials');

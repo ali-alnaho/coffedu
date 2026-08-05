@@ -4,9 +4,9 @@ import { z } from 'zod';
 export type RegisterDto = z.infer<typeof registerSchema>;
 
 export interface AuthUser {
-  userId: String;
-  userEmail?: String;
+  userId: string;
+  schoolId: string | null;
 
   // or use arry of string rolse role: String[];
-  role: 'ADMIN' | 'TEACHER' | 'STUDENT' | 'USER' | 'MANEGAR';
+  role: 'PLATFORM_OWNER' | 'SCHOOL_ADMIN' | 'STUDENT' | 'MANAGER' | 'TEACHER';
 }
