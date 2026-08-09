@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { AuthUser } from '@coffedu/contracts';
-
+import { Role } from '../../generated/prisma/enums.js';
 /**
  * Role-Based Access Control (RBAC) middleware factory.
  *
@@ -42,6 +42,10 @@ export const requireRole = (roles: AuthUser['role'][]) => {
       return res
         .status(401)
         .json({ message: 'Unauthorized user must log in first' });
+    }
+
+    if (user.role === Role.PLATFORM_OWNER) {
+      return next();
     }
 
     // Checks if the user's role is included in the allowed roles

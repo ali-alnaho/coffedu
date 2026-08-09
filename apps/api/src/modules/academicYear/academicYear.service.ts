@@ -4,11 +4,11 @@ import { academicYearRepository } from './academicYear.repository.js';
 import { AcademicYearDto } from '@coffedu/contracts';
 
 class AcademicYearService {
-  async getAllAcademicYear(ctx: TenantContext) {
-    return academicYearRepository.findMany(ctx);
+  async getAll(ctx: TenantContext) {
+    return await academicYearRepository.findMany(ctx);
   }
 
-  async createAcademicYear(ctx: TenantContext, academicYear: AcademicYearDto) {
+  async create(ctx: TenantContext, academicYear: AcademicYearDto) {
     const data: Prisma.AcademicYearUncheckedCreateInput = {
       year: academicYear.year,
       startDate: academicYear.startDate,
@@ -16,7 +16,7 @@ class AcademicYearService {
       isActive: true,
       schoolId: ctx.schoolId!,
     };
-    return academicYearRepository.create(data);
+    return await academicYearRepository.create(data);
   }
 }
 

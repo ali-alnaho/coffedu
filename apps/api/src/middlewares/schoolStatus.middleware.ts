@@ -11,7 +11,7 @@ export async function requireActiveSchool(
   const schoolId = req.user?.schoolId;
 
   if (!schoolId) {
-    return next(); // skep if user not have shcoolIf so it's PLATFORM_OWNER
+    return next(); // skip if user not have schoolId so it's PLATFORM_OWNER
   }
 
   const school = await prisma.school.findUnique({

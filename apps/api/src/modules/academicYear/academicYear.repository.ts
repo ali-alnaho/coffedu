@@ -8,6 +8,7 @@ class AcademicYearRepository {
     return await prisma.academicYear.findMany({
       where: buildTenantWhere(ctx),
       select: {
+        id: true,
         year: true,
         isActive: true,
       },

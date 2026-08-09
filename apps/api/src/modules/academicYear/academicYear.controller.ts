@@ -8,7 +8,7 @@ export async function getAllAcademicYear(req: Request, res: Response) {
     schoolId: req.user!.schoolId,
     role: req.user!.role,
   };
-  const result = await academicYearService.getAllAcademicYear(ctx);
+  const result = await academicYearService.getAll(ctx);
   res.json(result);
 }
 
@@ -18,10 +18,7 @@ export async function createAcademicYear(req: Request, res: Response) {
     role: req.user!.role,
   };
   const academicYearInput = AcademicYearSchema.parse(req.body);
-  const create = await academicYearService.createAcademicYear(
-    ctx,
-    academicYearInput
-  );
+  const create = await academicYearService.create(ctx, academicYearInput);
   res.status(201).json({
     success: true,
     message: 'Create!',
