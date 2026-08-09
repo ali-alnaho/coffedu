@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from '@coffedu/contracts';
 import { AppError } from '../errors/AppError.js';
+import { Prisma } from '../generated/prisma/client.js';
 
 export function errorHandler(
   err: unknown,
@@ -25,6 +26,16 @@ export function errorHandler(
       success: false,
       message: err.message,
     });
+  }
+
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === 'P2002') {
+      const field = (err.meta?.target as string[])?.join(', ') ?? 'field';
+      return res.status(409).json({
+        success: false,
+        message: `A record with this ${field} already exists.`,
+      });
+    }
   }
 
   console.error('UNEXPECTED ERROR:', err);

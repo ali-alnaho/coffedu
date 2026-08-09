@@ -4,7 +4,6 @@ import prisma from '../../db.js';
 import bcrypt from 'bcrypt';
 import Jwt from 'jsonwebtoken';
 import { Role } from '../../generated/prisma/enums.js';
-import { asyncHandler } from '../../utils/asyncHandler.js';
 import { UnauthorizedError, AppError } from '../../errors/AppError.js';
 
 export async function register(req: Request, res: Response) {
@@ -50,7 +49,7 @@ export async function register(req: Request, res: Response) {
   }
 }
 
-export const login = asyncHandler(async (req: Request, res: Response) => {
+export async function login(req: Request, res: Response) {
   const { userName, password } = loginSchema.parse(req.body);
 
   // find user by email in user module
@@ -63,6 +62,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       role: true,
       schoolId: true,
       password: true,
+      userName: true,
+      status: true,
     },
   });
 
@@ -106,6 +107,6 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     success: true,
     data: { user: userWithoutPassword, token },
   });
-});
+}
 
 // add refrush token

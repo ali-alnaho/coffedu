@@ -8,9 +8,16 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { Role } from '../../generated/prisma/enums.js';
 import { studentService } from './student.service.js';
+import { TenantContext } from '../../types/tenantContext.js';
 
 export const getAllStudents = async (req: Request, res: Response) => {
   try {
+    const ctx: TenantContext = {
+      schoolId: req.user!.schoolId,
+      role: req.user!.role,
+    };
+    const result = await studentService.getAllStudents(ctx);
+
     const students = await prisma.student.findMany();
     console.log(req.user);
     res.json(students);
@@ -40,7 +47,10 @@ export const createNewStudent = async (
 ): Promise<void> => {
   try {
     // const studentInput = StudentSchema.parse(req.body);
-    // const result = await studentService.createStudent(studentInput);
+    // const result = await studentService.createStudent(
+    //   studentInput,
+    //   req.user?.schoolId
+    // );
 
     const {
       firstName,

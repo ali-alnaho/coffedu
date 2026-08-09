@@ -4,10 +4,11 @@ import { Prisma } from '../../generated/prisma/client.js';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { getFullName } from './student.utils.js';
+import { TenantContext } from '../../types/tenantContext.js';
 
 class StudentService {
-  async getAllStudents() {
-    return await studentRepository.findMany();
+  async getAllStudents(ctx: TenantContext) {
+    return await studentRepository.findMany(ctx);
   }
 
   async getStudentById(id: string) {

@@ -1,12 +1,16 @@
 import prisma from '../../db.js';
 import { Prisma } from '../../generated/prisma/client.js';
+import { TenantContext } from '../../types/tenantContext.js';
+import { buildTenantWhere } from '../../utils/buildTenantWhere.js';
 
 export class StudentRepository {
   /**
    * Get all students.
    */
-  async findMany() {
-    return await prisma.student.findMany();
+  async findMany(ctx: TenantContext) {
+    return await prisma.student.findMany({
+      where: buildTenantWhere(ctx),
+    });
   }
 
   /**
