@@ -15,6 +15,17 @@ class GradeLevelRepository {
     });
   }
 
+  async findById(ctx: TenantContext, id: string) {
+    return await prisma.gradeLevel.findFirst({
+      where: buildTenantWhere(ctx, { id }),
+      select: {
+        id: true,
+        level: true,
+        name: true,
+      },
+    });
+  }
+
   async create(data: Prisma.GradeLevelUncheckedCreateInput) {
     return await prisma.gradeLevel.create({
       data,

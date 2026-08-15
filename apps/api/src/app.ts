@@ -6,6 +6,7 @@ import teacherRouter from './modules/teachers/teacher.routes.js';
 import schoolRouter from './modules/school/school.routes.js';
 import academicYearRouter from './modules/academicYear/academicYear.routes.js';
 import gradeLevelRouter from './modules/gradeLevel/gradeLevel.routes.js';
+import subjectRouter from './modules/subject/subject.routes.js';
 
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
 
@@ -20,6 +21,7 @@ app.use('/api', teacherRouter);
 app.use('/api', schoolRouter);
 app.use('/api', academicYearRouter);
 app.use('/api', gradeLevelRouter);
+app.use('/api', subjectRouter);
 
 app.use(errorHandler);
 
